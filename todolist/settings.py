@@ -14,12 +14,17 @@ from pathlib import Path
 
 import environ
 
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Take environment variables from .env_example file
-environ.Env.read_env(BASE_DIR.joinpath('.env_example'))
+# Take environment variables from .env file
+environ.Env.read_env(BASE_DIR.joinpath('.env'))
 
 
 # Quick-start development settings - unsuitable for production
@@ -44,7 +49,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
     'core',
 ]
 
@@ -84,13 +88,13 @@ WSGI_APPLICATION = 'todolist.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'HOST': os.environ.get('DB_HOST', "localhost"),
-        'NAME': os.environ.get('DB_NAME', "postgres"),
-        'PORT': os.environ.get('DB_PORT', "5432"),
-        'USER': os.environ.get('DB_USER', "postgres"),
-        'PASSWORD': os.environ.get('DB_PASSWORD', "postgres"),
-    },
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env("POSTGRES_DB"),
+        'USER': env("POSTGRES_USER"),
+        'PASSWORD': env("POSTGRES_PASSWORD"),
+        'HOST': env("POSTGRES_HOST", default='127.0.0.1'),
+        'PORT': "5432",
+    }
 }
 
 # Password validation
@@ -128,6 +132,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+AUTH_USER_MODEL = 'core.User'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
